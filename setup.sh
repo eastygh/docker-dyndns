@@ -64,7 +64,7 @@ options {
 EOF
 
 echo "Creating dyndns api config"
-cat > /root/dyndnsConfig.json <<EOF
+cat > /api/dyndnsConfig.json <<EOF
 {
    "User": "${API_USER}",
    "Password": "${API_PASSWORD}",
