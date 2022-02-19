@@ -81,4 +81,4 @@ chmod 770 /var/cache/bind
 
 service bind9 restart
 
-/root/dyndns-api
+/app/dyndns-api
