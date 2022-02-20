@@ -15,6 +15,7 @@ RUN apt-get update -qq && \
 COPY --from=builder /build/dyndns-api /app/
 COPY ./setup.sh /app/setup.sh
 RUN chmod +x /app/setup.sh
+RUN chmod +x /app/dyndns-api
 
 WORKDIR /app
 
