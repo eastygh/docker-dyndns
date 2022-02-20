@@ -5,12 +5,9 @@ WORKDIR /build
 RUN go get -d -v ./
 RUN go build -o dyndns-api . 
 
-FROM ubuntu
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && \
-    apt-get install -q -y bind9 dnsutils -qq --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM alpine
+
+RUN apk add --no-cache bind9 dnsutils
 
 COPY --from=builder /build/dyndns-api /app/
 COPY ./setup.sh /app/setup.sh
