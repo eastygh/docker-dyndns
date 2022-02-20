@@ -5,7 +5,7 @@ WORKDIR /build
 RUN go get -d -v ./
 RUN go build -o dyndns-api . 
 
-FROM debian:stretch
+FROM ubuntu
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && \
     apt-get install -q -y bind9 dnsutils -qq --no-install-recommends && \
