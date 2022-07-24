@@ -3,63 +3,20 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net"
+	"main/config"
+	"main/netutil"
 	"net/http"
 	"os"
 	"os/exec"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/gin-gonic/gin"
 )
 
-var dyndnsConfig = &Config{}
-
-type Config struct {
-	User     string
-	Password string
-	Zone     string
-	Domains  []string
-	TTL      string
-}
-
-func validateIpV4(ipV4 string) bool {
-	v4addr := net.ParseIP(ipV4)
-	if v4addr == nil {
-		return false
-	}
-	return (v4addr.To4() != nil)
-}
-
-func validateIpV6(ipV6 string) bool {
-	v6addr := net.ParseIP(ipV6)
-	if v6addr == nil {
-		return false
-	}
-	return (v6addr.To16() != nil)
-}
-
-func (conf *Config) parseConfig(pathToConfig string) {
-	file, err := os.Open(pathToConfig)
-	if err != nil {
-		panic(err)
-	}
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&conf)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func isDomainValid(domain string, domains []string) bool {
-	for _, cur := range domains {
-		if cur == domain {
-			return true
-		}
-	}
-	return false
-}
+var dyndnsConfig = &config.Config{}
 
 func updateZone(zone string, domain string, recordType string, ttl string, ip string) string {
 
@@ -94,9 +51,11 @@ func updateZone(zone string, domain string, recordType string, ttl string, ip st
 
 func main() {
 
+	log.Info().Msg("Starting...")
+
 	gin.SetMode(gin.ReleaseMode)
 
-	dyndnsConfig.parseConfig("./dyndnsConfig.json")
+	dyndnsConfig.ParseConfig("./dyndnsConfig.json")
 
 	router := gin.Default()
 
@@ -107,21 +66,21 @@ func main() {
 	authorized.GET("/update", func(c *gin.Context) {
 
 		domain := c.Query("domain")
-		
+
 		ip := c.Query("ip")
 		if len(ip) < 1 {
 			ip = c.ClientIP()
 		}
 
-		if isDomainValid(domain, dyndnsConfig.Domains) {
-			if validateIpV4(ip) {
+		if netutil.IsDomainValid(domain, dyndnsConfig.Domains) {
+			if netutil.ValidateIpV4(ip) {
 				err := updateZone(dyndnsConfig.Zone, domain, "A", dyndnsConfig.TTL, ip)
 				if err == "" {
 					c.String(http.StatusOK, "Set record for domain: %s to ip: %s", domain, ip)
 				} else {
 					c.String(http.StatusBadRequest, "%s", err)
 				}
-			} else if validateIpV6(ip) {
+			} else if netutil.ValidateIpV6(ip) {
 				err := updateZone(dyndnsConfig.Zone, domain, "AAAA", dyndnsConfig.TTL, ip)
 				if err == "" {
 					c.String(http.StatusOK, "Set record for domain: %s to ip: %s", domain, ip)
