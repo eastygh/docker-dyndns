@@ -4,7 +4,7 @@ __debug_bin
 .idea
 config
 
-dyndnsConfig.json
+src/dyndnsConfig.json
 !.gitignore
 
 *.iml
@@ -30,3 +30,30 @@ dyndnsConfig.json
 
 # Go workspace file
 go.work
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+tmp
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

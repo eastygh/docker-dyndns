@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"main/config"
+	"main/dns"
 	"main/netutil"
 	"net/http"
 	"os"
@@ -95,6 +96,11 @@ func main() {
 		}
 	})
 
-	router.Run(":8080")
+	handler := new(dns.Handler)
+	handler.StartDNSResolver()
+	err := router.Run(":8080")
+	if err != nil {
+		return
+	}
 
 }
