@@ -11,9 +11,9 @@ type Handler struct {
 	server *dns.Server
 }
 
-func (h *Handler) resolve(domain string, qtype uint16) []dns.RR {
+func (h *Handler) resolve(domain string, qType uint16) []dns.RR {
 	m := new(dns.Msg)
-	m.SetQuestion(dns.Fqdn(domain), qtype)
+	m.SetQuestion(dns.Fqdn(domain), qType)
 	m.RecursionDesired = true
 
 	c := new(dns.Client)
